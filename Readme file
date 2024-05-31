@@ -1,0 +1,8 @@
+To set up the development environment and run the application, follow these steps:
+1.	Download and Install Visual Studio: Visit the Visual Studio website to download and install Visual Studio.
+2.	Clone the Repository: Clone the Agri-Energy Connect repository to your local machine using Git.
+3.	Open Solution in Visual Studio: Open the solution file (AgriEnergyConnect.sln) in Visual Studio.
+4.	Build Solution: Build the solution to ensure all dependencies are resolved.
+5.	Run the Application: Press F5 or click on the Start button to run the application.
+6.	Login: Once the application starts, you should see the welcome page in your default web browser. Log in as either an employee or a farmer to access the respective functionalities.
+
