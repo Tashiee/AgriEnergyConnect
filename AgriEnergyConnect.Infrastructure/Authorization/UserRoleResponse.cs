@@ -1,12 +1,21 @@
 using AgriEnergyConnect.Domain.Users;
 
-namespace AgriEnergyConnect.Infrastructure.Authorization;
-
-public class UserRolesResponse
+// Define the namespace for the UserRolesResponse class.
+namespace AgriEnergyConnect.Infrastructure.Authorization
 {
-    public Guid UserId { get; init; }
- 
-    public List<Role> Roles { get; init; } = [];
-    public string LastName { get; set; } = string.Empty;
-    public string FirstName { get; set; } = string.Empty;
-} 
+    // Define the UserRolesResponse class.
+    public class UserRolesResponse
+    {
+        // Define the UserId property.
+        public Guid UserId { get; init; }
+
+        // Define the Roles property, initialized as an empty list.
+        public List<Role> Roles { get; init; } = [];
+
+        // Define the LastName property, initialized as an empty string.
+        public string LastName { get; set; } = string.Empty;
+
+        // Define the FirstName property, initialized as an empty string.
+        public string FirstName { get; set; } = string.Empty;
+    }
+}
