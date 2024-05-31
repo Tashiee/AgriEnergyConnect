@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgriEnergyConnect.Webapp", "AgriEnergyConnect.Webapp\AgriEnergyConnect.Webapp.csproj", "{F60FA3ED-067E-42DB-838B-81906BC6D5F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgriEnergyConnect.Domain", "AgriEnergyConnect.Domain\AgriEnergyConnect.Domain.csproj", "{4A1C358D-6A18-4F7C-BC95-0FDBBB284B49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgriEnergyConnect.Application", "AgriEnergyConnect.Application\AgriEnergyConnect.Application.csproj", "{6ED3C6BB-2059-4E00-9EB5-61D7B8ECD031}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgriEnergyConnect.Infrastructure", "AgriEnergyConnect.Infrastructure\AgriEnergyConnect.Infrastructure.csproj", "{2E834100-6AAC-4AF4-9312-CF96B4061F58}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F60FA3ED-067E-42DB-838B-81906BC6D5F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F60FA3ED-067E-42DB-838B-81906BC6D5F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F60FA3ED-067E-42DB-838B-81906BC6D5F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F60FA3ED-067E-42DB-838B-81906BC6D5F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A1C358D-6A18-4F7C-BC95-0FDBBB284B49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A1C358D-6A18-4F7C-BC95-0FDBBB284B49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A1C358D-6A18-4F7C-BC95-0FDBBB284B49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A1C358D-6A18-4F7C-BC95-0FDBBB284B49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ED3C6BB-2059-4E00-9EB5-61D7B8ECD031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ED3C6BB-2059-4E00-9EB5-61D7B8ECD031}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ED3C6BB-2059-4E00-9EB5-61D7B8ECD031}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ED3C6BB-2059-4E00-9EB5-61D7B8ECD031}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E834100-6AAC-4AF4-9312-CF96B4061F58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E834100-6AAC-4AF4-9312-CF96B4061F58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E834100-6AAC-4AF4-9312-CF96B4061F58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E834100-6AAC-4AF4-9312-CF96B4061F58}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

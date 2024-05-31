@@ -1,0 +1,113 @@
+@page "/employee-registration"
+@using Microsoft.AspNetCore.Antiforgery
+@using AgriEnergyConnect.Webapp.Components.Layout
+@using AgriEnergyConnect.Application.Users.Registration
+@attribute [RequireAntiforgeryToken(required: false)]
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@layout MainLayout
+
+<PageTitle>Registration</PageTitle>
+ 
+<div class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div class="flex items-center justify-center">
+            <img src="logo.png" alt="Logo">
+        </div>
+        <div class="mb-4 text-center">
+            <h1 class="text-2xl font-bold text-gray-800">Employee Registration</h1>
+        </div>
+        <EditForm Model="EmployeeRegistrationModel" OnSubmit="Submit" FormName="employee-registration-form">
+            <AntiforgeryToken/>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="first-name">First name</label>
+                @if (EmployeeRegistrationModel != null)
+                {
+                    <InputText @bind-Value="EmployeeRegistrationModel.FirstName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="first-name" type="text" placeholder="First name"/>
+                    @:</div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="last-name">Last name</label>
+                        <InputText @bind-Value="EmployeeRegistrationModel.LastName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="last-name" type="text" placeholder="Last name"/>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+                        <InputText @bind-Value="EmployeeRegistrationModel.Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="you@example.com"/>
+                    </div>
+                    @:<div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
+                    <InputText @bind-Value="EmployeeRegistrationModel.Password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="8+ characters"/>
+                    <ValidationMessage For="() => EmployeeRegistrationModel.Password"/>
+                }
+
+
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    <InputCheckbox @bind-Value="EmployeeRegistrationModel.TAndCAccepted" class="mr-2 leading-tight" type="checkbox"/>
+                    <span class="text-sm">I agree to terms and privacy policy</span>
+                </label>
+            </div>
+            <div class="mb-4">
+                <button class="bg-primary hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">
+                    Create account
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+ 
+    
+@code {
+    private EditContext? editContext;
+
+    [SupplyParameterFromForm]
+    public RegistrationRequest? EmployeeRegistrationModel { get; set; }
+
+    private ValidationMessageStore? messageStore;
+
+    protected override void OnInitialized()
+    {
+        EmployeeRegistrationModel ??= new RegistrationRequest();
+        editContext = new(EmployeeRegistrationModel);
+        editContext.OnValidationRequested += HandleValidationRequested;
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+    }
+
+    private async Task Submit()
+    {
+        if (EmployeeRegistrationModel?.FirstName != null)
+        {
+            var command = new EmployeeRegistrationCommand(
+                EmployeeRegistrationModel.FirstName,
+                EmployeeRegistrationModel.LastName,
+                EmployeeRegistrationModel.Email,
+                EmployeeRegistrationModel.Password);
+            
+            var result = await sender.Send(command);
+            
+            if (result.IsSuccess)
+            {
+                Console.WriteLine("Successfully registered the employee with Id");
+            
+                NavigationManager.NavigateTo("/login");
+            } 
+            else
+            {
+               Console.WriteLine("Failed to register the user please try again later");
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (editContext is not null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
+}
+ 

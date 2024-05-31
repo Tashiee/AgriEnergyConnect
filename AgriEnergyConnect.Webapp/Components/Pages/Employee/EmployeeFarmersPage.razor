@@ -1,0 +1,59 @@
+@page "/farmers"
+@using AgriEnergyConnect.Webapp.Components.Layout
+@using Microsoft.AspNetCore.Authorization
+@using AgriEnergyConnect.Application.Employee.ViewFarmers
+@layout DahboardLayout
+@attribute [Authorize(Roles = "Employee")]
+@rendermode InteractiveServer
+
+<h1 class="text-primary text-2xl font-bold">Farmers</h1>
+
+<div class="card shadow-lg bg-white mt-5 p-5">
+    <div class="card-body">
+        <button @onclick="NavigateToAddFarmer" class="bg-primary px-4 py-2 rounded mr-3 text-white flex items-center mb-4">
+            <span class="material-symbols-outlined">add</span>
+            Add farmer
+        </button>
+        <SfGrid @ref="Grid"
+                DataSource="@FarmersModel"
+                AllowPaging="true"
+                EnableStickyHeader="true"
+                Toolbar="@ToolbarItems">
+            <GridColumns>
+                <GridColumn Field="FirstName" HeaderText="First Name" ValidationRules="@(new ValidationRules { Required = true })"></GridColumn>
+                <GridColumn Field="LastName" HeaderText="Last Name" ValidationRules="@(new ValidationRules { Required = true })"></GridColumn>
+                <GridColumn Field="Email" HeaderText="Email" ValidationRules="@(new ValidationRules { Required = true, Email = true })"></GridColumn>
+                <GridColumn Field="Id" HeaderText="Id" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
+            </GridColumns>
+        </SfGrid>
+    </div>
+</div>
+ 
+@code {
+    SfGrid<FarmersModel> Grid { get; set; }
+    private IEnumerable<FarmersModel>? FarmersModel { get; set; } = new List<FarmersModel>();
+    private readonly List<string> ToolbarItems = new List<string>() { "Search", "Add" };
+    private readonly GridFilterSettings GridFilterSettings = new GridFilterSettings()
+    {
+        Type = FilterType.Excel
+    };
+    private readonly GridEditSettings _editSettings = new GridEditSettings()
+    {
+        AllowAdding = true,  
+        AllowDeleting = true,
+        AllowEditing = true,
+        Mode = EditMode.Dialog
+    };
+     
+    public async Task NavigateToAddFarmer()
+    {
+        navigationManager.NavigateTo("/farmer-registration");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new ViewFarmersQuery();
+        var result = await sender.Send(query);
+        FarmersModel = result.Value.Items;
+    }
+}

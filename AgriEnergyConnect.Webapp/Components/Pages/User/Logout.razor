@@ -1,0 +1,13 @@
+@page "/logout"
+@using AgriEnergyConnect.Application.Abstractions.Authentication
+@inject NavigationManager Navigation
+@inject IAuthenticationService AuthService
+<h3>Logout</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.SignOutAsync();
+        Navigation.NavigateTo("/");
+    }
+}

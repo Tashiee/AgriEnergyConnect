@@ -1,0 +1,74 @@
+@page "/farmer-products"
+@using AgriEnergyConnect.Webapp.Components.Layout
+@using Microsoft.IdentityModel.JsonWebTokens
+@using AgriEnergyConnect.Domain.Products
+@using AgriEnergyConnect.Application.Farmer
+@using Microsoft.AspNetCore.Authorization
+@layout DahboardLayout
+@rendermode InteractiveServer
+@attribute [Authorize (Roles = "Farmer")]
+<PageTitle>Products</PageTitle>
+
+<div class="mb-4">
+    <div>
+        <h1 class="text-primary text-2xl font-bold">Products</h1>
+    </div>
+</div>
+
+<div class="mt-5 p-5 mb-5">
+    <div class="card-body">
+        <button @onclick="UpdateHeading" class="bg-primary px-4 py-2 rounded mr-3 text-white flex items-center">
+            <span class="material-symbols-outlined">add</span>
+            Add product
+        </button>
+    </div>
+</div>
+
+<div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+        @foreach (var product in Products)
+        {
+            <div class="border rounded shadow-lg overflow-hidden mb-3">
+                @if (product.Photo != null)
+                {
+                    <img src="default-product-image.png" alt="@product.Name.Value" class="w-full h-48 object-cover" />
+                }
+                else
+                {
+                    <img src="default-product-image.png" alt="@product.Name.Value" class="w-full h-48 object-cover" />
+                }
+                <div class="p-4">
+                    <h2 class="text-lg font-semibold">@product.Name.Value</h2>
+                    <p class="text-gray-600">@product.ProductionDateUtc.ToString("yyyy-MM-dd")</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    private List<Product> Products { get; set; } = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState?.User;
+        if (user?.Identity?.IsAuthenticated == true)
+        {
+            var sub = user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (Guid.TryParse(sub, out var userId))
+            {
+                var query = new ViewProductsAsFarmerQuery(userId);
+                var data = await sender.Send(query);
+                Products = data.Value.Products.ToList();
+            }
+        }
+    }
+
+    private void UpdateHeading()
+    {
+        navigationManager.NavigateTo("/farmer-products/add-product");
+    }
+
+}

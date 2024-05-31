@@ -1,0 +1,67 @@
+@page "/farmer-products/add-product"
+@using AgriEnergyConnect.Webapp.Components.Layout
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.IdentityModel.JsonWebTokens
+@using AgriEnergyConnect.Application.Farmer.AddProduct
+@layout DahboardLayout
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@attribute [Authorize (Roles = "Farmer")]
+ 
+<div class="mb-4">
+    <div>
+        <h1 class="text-primary text-2xl font-bold">Add Product</h1>
+    </div>
+</div>
+
+<div class="card shadow-lg bg-white mt-5 p-5">
+    <div class="p-6">
+            <EditForm Model="editFormModel" OnSubmit="HandleValidSubmit" >
+                <AntiforgeryToken />
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="productName">Product Name</label>
+                    <InputText @bind-Value="editFormModel.Name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="productName" placeholder="Product Name"/>
+                </div>
+        
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="productCategory">Category</label>
+                    <InputText @bind-Value="editFormModel.Category" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="productCategory" placeholder="Category"/>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="productionDate">Production Date</label>
+                    <InputDate @bind-Value="editFormModel.ProductionDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="productionDate"/>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" id="addProductButton">Add Product</button>
+                </div>
+            </EditForm>
+    </div>
+</div>
+
+@code {
+    private AddProductRequest editFormModel = new AddProductRequest();
+ 
+
+    private async Task HandleValidSubmit()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState?.User;
+
+        if (user != null)
+        {
+            var sub = user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+   
+            var data = editFormModel;
+            var command = new CreateProductsCommand(data.Name, data.Category, data.ProductionDate, "default-product-image.webp", sub!);
+
+            var result = await sender.Send(command);
+ 
+            NavigationManager.NavigateTo("/farmer-products");
+        }
+    } 
+ 
+    
+}

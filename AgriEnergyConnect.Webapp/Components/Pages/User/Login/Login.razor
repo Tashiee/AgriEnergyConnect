@@ -1,0 +1,137 @@
+@page "/login"
+@using Microsoft.AspNetCore.Antiforgery
+@using AgriEnergyConnect.Webapp.Components.Layout
+@using AgriEnergyConnect.Application.Users.Login
+@attribute [RequireAntiforgeryToken(required: false)]
+@implements IDisposable
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+@inject NavigationManager NavManager
+@layout MainLayout
+ 
+<PageTitle>Login</PageTitle>
+
+<div class="bg-gray-100 flex justify-center items-center min-h-screen p-16">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div class="flex items-center justify-center mb-4">
+            <img src="logo.png" alt="Logo">
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Login</h1>
+        <EditForm Model="LoginModel" OnSubmit="Submit" FormName="employee-login-form">
+            <AntiforgeryToken />
+            <div class="mb-4">
+                @if (LoginModel != null)
+                {
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+                        <InputText @bind-Value="LoginModel.Email"
+                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                   id="email"
+                                   type="email"
+                                   placeholder="you@example.com" />
+                        <ValidationMessage For="() => LoginModel.Email" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
+                        <InputText @bind-Value="LoginModel.Password"
+                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                   id="password"
+                                   placeholder="Password"
+                                   type="password" />
+                        <ValidationMessage For="() => LoginModel.Password" />
+                    </div>
+
+                }
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    <InputCheckbox @bind-Value="LoginModel.RememberMe"
+                                   class="mr-2 leading-tight"
+                                   type="checkbox" />
+                    <span class="text-sm">Remember me?</span>
+                </label>
+            </div>
+            <div class="mb-4">
+                <button class="bg-primary hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="submit">
+                    Login
+                </button>
+            </div>
+            <div class="mb-4">
+                <a href="/employee-registration" class="text-primary decoration-1">
+                    Register as employee?
+                </a>
+            </div>
+            <div class="mb-4">
+            <a href="/farmer-registration" class="text-primary decoration-8" >
+                Register as farmer?
+            </a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private EditContext? editContext;
+    private string returnUrl;
+    [SupplyParameterFromForm]
+    public LoginRequest? LoginModel { get; set; }
+
+    private ValidationMessageStore? messageStore;
+
+    protected override void OnInitialized()
+    {
+        LoginModel ??= new LoginRequest();
+        editContext = new(LoginModel);
+        messageStore = new ValidationMessageStore(editContext);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        
+        var uri = new Uri(NavigationManager.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        if (query.TryGetValue("returnUrl", out var url))
+        {
+            returnUrl = url;
+        }
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+    }
+
+    private async Task Submit()
+    {
+        if (LoginModel?.Email != null && LoginModel.Password != null)
+        {
+            // Replace with actual login logic, e.g., API call for authentication
+            var isAuthenticated = await AuthenticateUser(LoginModel.Email, LoginModel.Password);
+
+            if (isAuthenticated)
+            {
+                NavigationManager.NavigateTo(returnUrl ?? "/");
+            }
+            else
+            {
+                messageStore?.Add(editContext.Field(nameof(LoginModel.Email)), "Invalid email or password");
+                messageStore?.Add(editContext.Field(nameof(LoginModel.Password)), "Invalid email or password");
+                editContext.NotifyValidationStateChanged();
+            }
+        }
+    }
+
+    private async Task<bool> AuthenticateUser(string email, string password)
+    {
+        var command = new LoginCommand(email, password);
+        var result = await sender.Send(command);
+        return result.Value;
+    }
+
+    public void Dispose()
+    {
+        if (editContext is not null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
+}
+ 

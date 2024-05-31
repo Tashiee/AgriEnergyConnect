@@ -1,0 +1,61 @@
+@page "/employee-products"
+@using Microsoft.AspNetCore.Authorization
+ 
+@using AgriEnergyConnect.Application.Employee.ViewProducts
+@using AgriEnergyConnect.Webapp.Components.Layout
+@using Microsoft.IdentityModel.JsonWebTokens
+@attribute [Authorize(Roles = "Employee")]
+@layout DahboardLayout
+@rendermode InteractiveServer
+  
+
+<div>
+    <div>
+        <h1 class="text-primary text-2xl font-bold">View products</h1>
+    </div>
+</div>
+
+<div class="card shadow-lg bg-white mt-5 p-5">
+    <SfGrid DataSource="@Products" AllowFiltering="true" EnableStickyHeader="true" Toolbar="@ToolbarItems">
+        <GridColumns>
+            <GridColumn Field="@nameof(ProductsEmployeeModel.FullName)" HeaderText="Farmer Name" TextAlign="TextAlign.Left"></GridColumn>
+            <GridColumn Field="ProductName" HeaderText="Product Name" TextAlign="TextAlign.Left"></GridColumn>
+            <GridColumn Field="ProductCategory" HeaderText="Category" TextAlign="TextAlign.Left"></GridColumn>
+            <GridColumn Field="ProductionDate" HeaderText="Production Date" Type="ColumnType.Date" TextAlign="TextAlign.Left"></GridColumn>
+        </GridColumns>
+        <GridEvents TValue="ProductsEmployeeModel"></GridEvents>
+        <GridPageSettings PageSize="15"></GridPageSettings>
+        <GridFilterSettings Type="FilterType.Excel"></GridFilterSettings>
+        <GridSearchSettings Fields="@SearchColumns"></GridSearchSettings>
+        <GridSelectionSettings CheckboxMode="CheckboxSelectionType.Default" CheckboxOnly="true"></GridSelectionSettings>
+        <SfDataManager>
+        </SfDataManager>
+    </SfGrid>
+</div>
+
+  
+
+@code {
+    private readonly List<string> ToolbarItems = new List<string>() { "Search"};
+    private List<ProductsEmployeeModel> Products { get; set; } = [];
+
+    private string[] SearchColumns { get; set; } = ["FullName", "Name", "Category", "ProductionDateUtc"];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState?.User;
+        if (user?.Identity?.IsAuthenticated == true)
+        {
+            var sub = user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            if (Guid.TryParse(sub, out var userId))
+            {
+                var query = new ViewProductsAsEmployeeQuery();
+                var data = await sender.Send(query);
+                Products = data.Value.Products.ToList();
+            }
+        }
+    }
+
+
+}

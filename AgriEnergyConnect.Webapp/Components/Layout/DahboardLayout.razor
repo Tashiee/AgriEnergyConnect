@@ -1,0 +1,82 @@
+@using Microsoft.IdentityModel.JsonWebTokens
+@inherits LayoutComponentBase
+
+<div class="flex bg-gray-100">
+
+    <!-- Sidebar -->
+    <div class="w-[250px] bg-secondary min-h-screen p-4 flex flex-col justify-between">
+        <div>
+            <div class="mb-6 flex items-center mt-2">
+                <img src="logo.png" alt="Agri-Energy-Connect Logo" class="w-12 h-12 mr-2">
+                <span class="text-xl text-primary font-bold">Agri-Connect</span>
+            </div>
+            <nav>
+                <AuthorizeView Roles="@Roles.Farmer">
+                    <Authorized>
+                        <ul>
+                            <li class="mb-4"><a href="#" class="text-primary">Dashboard</a></li>
+                            <li class="mb-4"><a href="/farmer-products" class="text-primary">Products</a></li>
+                        </ul>
+                    </Authorized>
+                </AuthorizeView>
+                
+                <AuthorizeView Roles="@Roles.Employee">
+                    <Authorized>
+                        <ul>
+                            <li class="mb-4"><a href="#" class="text-primary">Dashboard</a></li>
+                            <li class="mb-4"><a href="/farmers" class="text-primary">Farmers</a></li>
+                            <li class="mb-4"><a href="/employee-products" class="text-primary">Products</a></li>
+                        </ul>
+                    </Authorized>
+                </AuthorizeView>
+                
+            </nav> 
+        </div>
+        <div class="mx-auto">
+            <div>
+                <a href="/Logout" class="w-full bg-primary text-white py-2 rounded mt-6">Logout</a>
+            </div> 
+        </div>
+
+    </div> 
+ 
+    <!-- Main Content -->
+    <div class="flex-1 p-7">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-xl text-primary font-bold">Welcome , @name</h1>
+            <div class="flex items-center">
+                <input type="search" placeholder="search" class="border rounded p-2 mr-4">
+                <div class="flex items-center">
+                    <span class="ml-4 text-primary">@role</span>
+                    <img src="user.jpg" alt="Profile" class="ml-2 w-8 h-8 rounded-full">
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-container">
+          @Body
+        </div>
+
+        <!-- Add your main content here -->
+        
+    </div> 
+</div>
+
+@code {
+    private string? role = "Dashboard";
+    private string? name = "Admin HR";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState?.User;
+         
+        if (user?.Identity?.IsAuthenticated == true)
+        {
+            role = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            name = user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.GivenName)?.Value;
+        }
+
+    }
+
+}
